@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Situations struct to parse the situation xml
@@ -51,6 +52,29 @@ type row struct {
 	SOURCE       string `xml:"SOURCE"`
 	TEXT         string `xml:"TEXT"`
 	DISTRIBUTION string `xml:"DISTRIBUTION"`
+}
+
+// ParseLstDate parse <LSTDATE> to mm/dd/yy HH:mm:ss
+func (s *Situations) ParseLstDate() (string, error) {
+	ds := []byte(s.ROW.LSTDATE)
+	if len(ds) < 13 {
+		return "", fmt.Errorf("s.ROW.LSTDATE out of range")
+	}
+	return fmt.Sprintf("%s/%s/%s %s:%s:%s",
+		ds[3:5], ds[5:7], ds[1:3],
+		ds[7:9], ds[9:11], ds[11:13]), nil
+}
+
+// SplitDist split Distriburion list into a slice
+// useful to manipulate each distribution item
+func (s *Situations) SplitDist() ([]string, error) {
+	ss := strings.Split(s.ROW.DISTRIBUTION, ",")
+
+	if len(ss) > 0 {
+		return ss, nil
+	}
+	return ss, fmt.Errorf("Empty slice")
+
 }
 
 // ParseLstDate parse <LSTDATE> to mm/dd/yy HH:mm:ss
