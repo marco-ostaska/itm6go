@@ -77,17 +77,6 @@ func (s *Situations) SplitDist() ([]string, error) {
 
 }
 
-// ParseLstDate parse <LSTDATE> to mm/dd/yy HH:mm:ss
-func (s *Situations) ParseLstDate() (string, error) {
-	ds := []byte(s.ROW.LSTDATE)
-	if len(ds) < 13 {
-		return "", fmt.Errorf("s.ROW.LSTDATE out of range")
-	}
-	return fmt.Sprintf("%s/%s/%s %s:%s:%s",
-		ds[3:5], ds[5:7], ds[1:3],
-		ds[7:9], ds[9:11], ds[11:13]), nil
-}
-
 //ParseSitXML parse the xml for the given situation
 func ParseSitXML(s string) (Situations, error) {
 	var sit Situations
