@@ -16,9 +16,15 @@ import (
 // Situations struct to parse the situation xml
 // ROW contains all tags from exported xml
 type Situations struct {
-	XMLName xml.Name `xml:"TABLE"`
-	Text    string   `xml:",chardata"`
-	ROW     row      `xml:"ROW"`
+	XMLName      xml.Name `xml:"TABLE"`
+	Text         string   `xml:",chardata"`
+	ROW          row      `xml:"ROW"`
+	DistribGroup distribution
+}
+
+type distribution struct {
+	msls   []string
+	agents []string
 }
 
 type row struct {
@@ -75,6 +81,22 @@ func (s *Situations) SplitDist() ([]string, error) {
 	}
 	return ss, fmt.Errorf("Empty slice")
 
+}
+
+//GroupDist groups distribuion in agents and msls
+func (s *Situations) GroupDist() {
+	ds, err := s.SplitDist()
+	if err != nil {
+		return
+	}
+
+	for _, v := range ds {
+		if strings.Contains(v, ":") {
+			s.DistribGroup.agents = append(s.DistribGroup.agents, v)
+			continue
+		}
+		s.DistribGroup.msls = append(s.DistribGroup.msls, v)
+	}
 }
 
 //ParseSitXML parse the xml for the given situation
